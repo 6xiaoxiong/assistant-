@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 主管 · 问答助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: #08090a;
+            color: #c9cdd5;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ==================== 顶部导航 ==================== */
+        .top-nav {
+            background: #0d0e10;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 0 32px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #5e6ad2 0%, #7c7fe8 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 4px;
+        }
+
+        .nav-link {
+            padding: 6px 14px;
+            border-radius: 6px;
+            color: #8b8f98;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #c9cdd5;
+            background: rgba(255,255,255,0.06);
+        }
+
+        .nav-link.active {
+            color: white;
+            background: rgba(94,106,210,0.15);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #1a1b2e;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+        }
+
+        /* ==================== Hero 区 ==================== */
+        .hero {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 80px 24px 48px;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(94,106,210,0.12);
+            border: 1px solid rgba(94,106,210,0.25);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #8b8ff5;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            background: #8b8ff5;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .hero p {
+            font-size: 17px;
+            color: #5e636d;
+            margin-bottom: 40px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-search {
+            position: relative;
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        .hero-search textarea {
+            width: 100%;
+            height: 120px;
+            padding: 18px 20px;
+            background: #0d0e10;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #c9cdd5;
+            font-size: 15px;
+            line-height: 1.7;
+            resize: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .hero-search textarea:focus {
+            outline: none;
+            border-color: #5e6ad2;
+            box-shadow: 0 0 0 3px rgba(94,106,210,0.15);
+        }
+
+        .hero-search textarea::placeholder {
+            color: #5e636d;
+        }
+
+        .tone-selector {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tone-label {
+            font-size: 13px;
+            color: #8b91a0;
+            white-space: nowrap;
+        }
+
+        .tone-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tone-btn {
+            padding: 6px 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            font-size: 13px;
+            color: #8b91a0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tone-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
+            color: #c9cdd5;
+        }
+
+        .tone-btn.active {
+            background: rgba(94,106,210,0.15);
+            border-color: #5e6ad2;
+            color: #a5a9f0;
+        }
+
+        .hero-search-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+
+        .search-hint {
+            font-size: 13px;
+            color: #5e636d;
+        }
+
+        .search-hint kbd {
+            background: rgba(255,255,255,0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: monospace;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-primary {
+            background: #5e6ad2;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background: #6c70d8;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            background: #3d4060;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ==================== 输出区 ==================== */
+        .output-section {
+            max-width: 720px;
+            margin: 0 auto 48px;
+            padding: 0 24px;
+            display: none;
+        }
+
+        .output-section.active {
+            display: block;
+        }
+
+        .output-card {
+            background: #0d0e10;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .output-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .output-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .source-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(94,106,210,0.12);
+            color: #8b8ff5;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .reply-content {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            padding: 18px;
+            min-height: 120px;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #c9cdd5;
+            margin-bottom: 16px;
+            white-space: pre-wrap;
+        }
+
+        .btn-copy {
+            background: #5e6ad2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-copy:hover {
+            background: #6c70d8;
+            transform: translateY(-1px);
+        }
+
+        .btn-copy.copied {
+            background: #3d7a52;
+        }
+
+        /* ==================== 分类卡片 ==================== */
+        .categories {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 24px 64px;
+        }
+
+        .categories-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #5e636d;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .category-card {
+            background: #0d0e10;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.2s;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .category-card:hover {
+            background: #13141a;
+            border-color: rgba(94,106,210,0.3);
+            transform: translateY(-2px);
+        }
+
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(94,106,210,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .category-card:hover .category-icon {
+            background: rgba(94,106,210,0.15);
+        }
+
+        .category-info h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .category-info p {
+            font-size: 13px;
+            color: #5e636d;
+            line-height: 1.5;
+        }
+
+        /* ==================== 历史记录 ==================== */
+        .history-section {
+            max-width: 720px;
+            margin: 0 auto 48px;
+            padding: 0 24px;
+        }
+
+        .history-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #5e636d;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            background: #0d0e10;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            background: #13141a;
+            border-color: rgba(94,106,210,0.2);
+        }
+
+        .history-question {
+            font-size: 14px;
+            color: #c9cdd5;
+            flex: 1;
+            margin-right: 16px;
+        }
+
+        .history-time {
+            font-size: 12px;
+            color: #5e636d;
+            white-space: nowrap;
+        }
+
+        /* ==================== Loading ==================== */
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(139,143,245,0.3);
+            border-top-color: #8b8ff5;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ==================== 移动端汉堡菜单 ==================== */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 6px;
+            background: none;
+            border: none;
+        }
+        .hamburger span {
+            display: block;
+            width: 18px;
+            height: 2px;
+            background: #c9cdd5;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        .hamburger.open span:nth-child(1) {
+            transform: rotate(45deg) translate(4px, 4px);
+        }
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.open span:nth-child(3) {
+            transform: rotate(-45deg) translate(4px, -4px);
+        }
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            background: #0d0e10;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 12px 16px;
+            z-index: 99;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .mobile-menu.open {
+            display: flex;
+        }
+        .mobile-menu .nav-link {
+            padding: 10px 14px;
+            font-size: 15px;
+        }
+
+        /* ==================== Toast 提示 ==================== */
+        .toast {
+            position: fixed;
+            top: 72px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: #1a1b2e;
+            border: 1px solid rgba(94,106,210,0.3);
+            color: #c9cdd5;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        /* ==================== Responsive ==================== */
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 0 16px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .hero {
+                padding: 48px 16px 32px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ==================== 基础操作手册弹窗 ==================== */
+        .manual-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .manual-modal.open {
+            display: flex;
+        }
+
+        .manual-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+        }
+
+        .manual-content {
+            position: relative;
+            background: #0d0e10;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .manual-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            background: rgba(0,0,0,0.3);
+        }
+
+        .manual-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .manual-close {
+            background: none;
+            border: none;
+            color: #5e636d;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .manual-close:hover {
+            color: #c9cdd5;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .manual-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 12px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            background: rgba(0,0,0,0.2);
+        }
+
+        .manual-tab {
+            padding: 8px 16px;
+            background: none;
+            border: none;
+            color: #5e636d;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .manual-tab:hover {
+            color: #c9cdd5;
+            background: rgba(255,255,255,0.06);
+        }
+
+        .manual-tab.active {
+            color: white;
+            background: rgba(94,106,210,0.15);
+        }
+
+        .manual-body {
+            padding: 24px;
+            overflow-y: auto;
+            max-height: calc(85vh - 140px);
+        }
+
+        .manual-panel {
+            display: none;
+        }
+
+        .manual-panel.active {
+            display: block;
+        }
+
+        .manual-panel h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+
+        .manual-panel h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            margin: 20px 0 10px;
+            line-height: 1.4;
+        }
+
+        .manual-panel h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #c9cdd5;
+            margin: 16px 0 8px;
+            line-height: 1.4;
+        }
+
+        .manual-panel p {
+            font-size: 14px;
+            color: #8b8f98;
+            line-height: 1.8;
+            margin-bottom: 8px;
+        }
+
+        .manual-panel ul {
+            margin: 8px 0 16px 20px;
+            padding-left: 0;
+        }
+
+        .manual-panel li {
+            font-size: 14px;
+            color: #8b8f98;
+            line-height: 1.8;
+            margin-bottom: 6px;
+        }
+
+        .warning-box {
+            background: rgba(255,187,0,0.08);
+            border: 1px solid rgba(255,187,0,0.2);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #e6b800;
+            line-height: 1.7;
+        }
+
+        .coming-soon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 60px 20px;
+            color: #5e636d;
+            font-size: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .manual-content {
+                width: 95%;
+                max-height: 90vh;
+            }
+
+            .manual-header {
+                padding: 12px 16px;
+            }
+
+            .manual-tabs {
+                padding: 8px 16px;
+            }
+
+            .manual-tab {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+
+            .manual-body {
+                padding: 16px;
+                max-height: calc(90vh - 120px);
+            }
+
+            .manual-panel h2 {
+                font-size: 16px;
+            }
+
+            .warning-box {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <div class="nav-left">
+            <a href="#" class="logo">
+                <div class="logo-icon">AI</div>
+                <span>AI 主管</span>
+            </a>
+            <div class="nav-links">
+                <a href="javascript:void(0)" class="nav-link active">问答助手</a>
+                <a href="https://6xiaoxiong.github.io/alphax-kb/" class="nav-link" target="_blank">话术库</a>
+                <a href="javascript:void(0)" class="nav-link" onclick="openManual()">基础操作手册</a>
+            </div>
+            <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div class="nav-right">
+            <div class="avatar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="#4ade80"/>
+                    <path d="M8 12a4 4 0 014-4v8H8a4 4 0 010-8z" fill="#1a1b2e"/>
+                </svg>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 移动端菜单 -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="javascript:void(0)" class="nav-link active">问答助手</a>
+        <a href="https://6xiaoxiong.github.io/alphax-kb/" class="nav-link" target="_blank">话术库</a>
+        <a href="javascript:void(0)" class="nav-link" onclick="openManual(); toggleMobileMenu();">基础操作手册</a>
+    </div>
+
+    <!-- Hero 区 -->
+    <div class="hero">
+        <div class="badge">
+            <span class="badge-dot"></span>
+            知识库已就绪 · 5 类知识库已加载
+        </div>
+        <h1>AI 主管问答助手</h1>
+        <p>粘贴用户问题，AI 根据知识库自动生成专业回复，一键复制给用户</p>
+
+        <div class="hero-search">
+            <textarea id="userQuestion" placeholder="这里粘贴用户的问题，例如：客户说"包装破了怎么办"..." rows="4"></textarea>
+            <div class="tone-selector">
+                <span class="tone-label">语气版本：</span>
+                <div class="tone-options">
+                    <button class="tone-btn active" data-tone="standard" onclick="setTone('standard')">标准版</button>
+                    <button class="tone-btn" data-tone="friendly" onclick="setTone('friendly')">亲切版</button>
+                    <button class="tone-btn" data-tone="concise" onclick="setTone('concise')">简洁版</button>
+                    <button class="tone-btn" data-tone="professional" onclick="setTone('professional')">专业版</button>
+                </div>
+            </div>
+            <div class="hero-search-footer">
+                <button class="btn-primary" onclick="askAI()" id="askBtn">
+                    让 AI 主管回答
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 输出区 -->
+    <div class="output-section" id="outputSection">
+        <div class="output-card">
+            <div class="output-header">
+                <div class="output-title">
+                    🤖 AI 主管回复
+                </div>
+                <div class="source-tag">
+                    📚 <span id="sourceType">标准问答库</span>
+                </div>
+            </div>
+            <div class="reply-content" id="aiReply">AI 正在思考中...</div>
+            <button class="btn-copy" onclick="copyReply()" id="copyBtn">
+                📋 一键复制回复
+            </button>
+        </div>
+    </div>
+
+    <!-- 历史记录 -->
+    <div class="history-section" id="historySection" style="display: none;">
+        <div class="history-title">最近会话</div>
+        <div class="history-list" id="historyList"></div>
+    </div>
+
+    <!-- 分类卡片 -->
+    <div class="categories">
+        <div class="categories-title">知识库分类</div>
+        <div class="category-grid">
+            <div class="category-card" onclick="fillExample('风险红线库')">
+                <div class="category-icon">🚫</div>
+                <div class="category-info">
+                    <h3>风险红线库</h3>
+                    <p>绝对禁止的回复内容，涉及法律、合规、品牌风险</p>
+                </div>
+            </div>
+            <div class="category-card" onclick="fillExample('标准问答库')">
+                <div class="category-icon">📚</div>
+                <div class="category-info">
+                    <h3>标准问答库</h3>
+                    <p>高频问题的标准回复模板，覆盖 80% 常见咨询</p>
+                </div>
+            </div>
+            <div class="category-card" onclick="fillExample('流程指引库')">
+                <div class="category-icon">📋</div>
+                <div class="category-info">
+                    <h3>流程指引库</h3>
+                    <p>退货、退款、换货等操作步骤的详细指引</p>
+                </div>
+            </div>
+            <div class="category-card" onclick="fillExample('活动规则库')">
+                <div class="category-icon">🎯</div>
+                <div class="category-info">
+                    <h3>活动规则库</h3>
+                    <p>促销活动、优惠券、会员权益的规则说明</p>
+                </div>
+            </div>
+            <div class="category-card" onclick="fillExample('疑难沉淀库')">
+                <div class="category-icon">💡</div>
+                <div class="category-info">
+                    <h3>疑难沉淀库</h3>
+                    <p>复杂问题的处理经验和升级判断标准</p>
+                </div>
+            </div>
+            <div class="category-card" onclick="fillExample('升级条件')">
+                <div class="category-icon">⚠️</div>
+                <div class="category-info">
+                    <h3>升级条件</h3>
+                    <p>触发人工介入的 5 类条件判断</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 提示 -->
+    <div class="toast" id="toast"></div>
+
+    <!-- 基础操作手册弹窗 -->
+    <div class="manual-modal" id="manualModal">
+        <div class="manual-overlay" onclick="closeManual()"></div>
+        <div class="manual-content">
+            <div class="manual-header">
+                <div class="manual-title">基础操作手册</div>
+                <button class="manual-close" onclick="closeManual()">✕</button>
+            </div>
+            <div class="manual-tabs">
+                <button class="manual-tab active" onclick="switchTab(0)">ALPHAX 使用说明</button>
+                <button class="manual-tab" onclick="switchTab(1)">软件设置教程</button>
+            </div>
+            <div class="manual-body">
+                <div class="manual-panel active" id="panel0">
+                    <h2>ALPHAX 阿尔法AI 助手 使用说明</h2>
+                    <div class="warning-box">
+                        ⚠️ 合规声明：本软件及相关说明仅用于扑克策略教学、训练和历史牌谱复盘。严禁用于任何真实金钱对局、在线赌博平台辅助或违反任何国家/地区法律法规的用途。未满法定年龄者不得使用。
+                    </div>
+                    <h3>1. 软件使用流程</h3>
+                    <p>打开软件后，在教学训练界面选择相应的训练场景，下载组件并打开，加载AI决策模型。</p>
+                    <p>首次加载可能需要等待。加载完成后，点击右上角功能菜单，根据训练需求勾选所需功能：</p>
+                    <ul>
+                        <li>决策分析建议</li>
+                        <li>历史牌谱学习</li>
+                        <li>教学训练模式</li>
+                    </ul>
+                    <p>（翻前智能弃牌等参数可在教学训练场景下设置，用于学习不同松紧策略。）</p>
+                    <p>开始训练后，系统会展示当前局面的决策概率参考、风险评估参考。学习者可根据系统提示，结合自己对牌面、位置、对手风格的理解，判断在当前教学场景中应选择的行动。</p>
+                    <p><strong>教学提示：</strong>系统建议仅供参考，实际学习时应以理解策略逻辑为主，而非机械照搬。</p>
+                    <h3>2. 软件功能介绍（教学训练用途）</h3>
+                    <h4>AI模型分析</h4>
+                    <p>不同AI模型支持不同的教学训练场景。模型会根据手牌、公共牌、模拟对手的下注情况、所在位置，给出基于博弈论策略的决策参考，帮助学习者理解策略选择背后的逻辑。</p>
+                    <p>功能包括：</p>
+                    <ul>
+                        <li><strong>决策概率参考：</strong>展示在不同行动下的选择概率分布。</li>
+                        <li><strong>EV权益参考：</strong>展示某行动在长期训练中的平均权益变化，帮助学习者理解行动价值。</li>
+                        <li><strong>下注尺度参考：</strong>在教学训练场景中，提供参考下注尺度，用于学习合理的筹码管理思路。</li>
+                    </ul>
+                    <p>注：上述功能均为教学参考，不构成真实对局建议。</p>
+                    <h4>手动分析模式</h4>
+                    <p>学习者可以选择仅在需要时手动请求AI分析，用于针对性学习特定牌型或局面，降低训练资源消耗。</p>
+                    <h4>翻前弃牌策略学习</h4>
+                    <p>可设置弃牌百分比，系统将按手牌强度进行划分，帮助学习者理解不同入池范围与策略松紧的关系。该功能仅用于教学演示，学习者应理解其背后的策略逻辑。</p>
+                    <h3>3. 手牌强度与学习参数</h3>
+                    <h4>手牌强度参考</h4>
+                    <p>系统的手牌强度值（0.1-100）综合了手牌、公共牌、参与人数等因素，帮助学习者理解当前牌型在教学场景中的相对强度。该数值为教学参考，不应单独作为真实决策依据。</p>
+                    <h4>激进度参数（教学演示）</h4>
+                    <p>在训练模式中，可调整AI策略的激进程度，观察不同激进参数下决策的变化。该功能仅用于理解激进策略与筹码波动之间的关系，帮助学习者建立风险意识。</p>
+                    <h4>风险与权益意识</h4>
+                    <p>在训练过程中，学习者应培养风险识别意识，理解下风期与波动。</p>
+                    <p>系统的分析基于模拟环境，学习者应结合自身判断，理解任何策略都有风险与收益权衡。</p>
+                    <p>教学场景中可适当尝试不同风险承受能力，但应在真实生活中远离赌博行为。</p>
+                    <h3>4. 入池与加注策略学习</h3>
+                    <h4>入池率控制</h4>
+                    <p>在教学训练中，建议学习者将入池率控制在合理范围内（约30%），理解不同桌型、不同位置下的入池范围选择。设置参数仅为参考，学习者应通过训练理解其策略含义。</p>
+                    <h4>加注尺度学习</h4>
+                    <p>系统提示的加注概率较低时，不建议轻易加注，学习者应理解原因。</p>
+                    <p>当系统提示加注概率较高时，可参考系统给出的下注尺度，学习标准下注思路。</p>
+                    <p>学习者应理解：下注尺度与牌力、底池、对手风格等因素相关，不可机械套用。</p>
+                    <p>在训练场景中，可适当调整下注尺度，观察不同尺度下的结果变化，加深理解。</p>
+                    <h3>5. 跟注策略学习</h3>
+                    <p>在拿到中强牌时，系统可能推荐跟注或检查，这通常是为了避免在不利位置被过度挤压。学习者应理解位置价值与筹码保护的概念。</p>
+                    <p>在牌力较强时，系统推荐过牌的概率较高，这可能是在教学演示中设置陷阱或控制底池。学习者应理解价值获取与对手诈唬之间的关系。</p>
+                    <p>在翻牌未中牌时，系统提示跟注可能是为了演示位置防守。学习者应理解防守频率与对手风格的关系。</p>
+                    <p>在九人桌训练场景中，拿到边缘牌型时，即使系统提示加注概率较高，也可选择跟注，以学习底池控制。</p>
+                    <h3>6. 弃牌与其他学习提示</h3>
+                    <h4>弃牌学习</h4>
+                    <p>当跟注风险为0时，某些追牌牌型可偶尔跟注，但学习者应理解这不是长期最优策略。</p>
+                    <p>当系统提示弃牌概率极高时，通常代表在当前教学场景中该手牌期望值较低，学习者应重点理解其背后的逻辑，而非简单照搬。</p>
+                    <h4>其他学习提示</h4>
+                    <p>在训练场景中，可手动跳过一些明显无需分析的牌型，以减少训练资源消耗。</p>
+                    <p>建议在稳定的网络环境下使用，以保证训练体验。</p>
+                    <p>推荐使用PC版进行复杂场景学习，体验更流畅。</p>
+                    <h3>7. 功能更新</h3>
+                    <p>AI训练模型：基于历史牌谱与模拟对手风格持续训练优化，用于教学演示和策略学习。学习者不应将其用于真实对局。</p>
+                    <p>系统会定期更新训练数据，以提升教学演示效果。</p>
+                    <h3>8. 合规与安全提示</h3>
+                    <p>本软件及本说明仅用于教学、训练、策略学习目的。</p>
+                    <p>禁止将本软件用于任何真实金钱对局、在线赌博平台、或任何违反国家/地区法律法规的用途。</p>
+                    <p>禁止将本软件用于任何自动化代打、规避平台规则、伪造位置信息或其他不正当行为。</p>
+                    <p>用户应自行承担因违规使用本软件而产生的一切法律责任。</p>
+                    <p>如对本软件的合法用途有疑问，请咨询专业法律人士。</p>
+                </div>
+                <div class="manual-panel" id="panel1">
+                    <h2>软件设置教程</h2>
+                    <p>尊敬的用户，为了您能更好地使用阿尔法软件以及体验相关功能，建议您使用前先详细阅读内置新手教程与配套文档以后再进行操作。感谢您的理解与支持！</p>
+                    <h3>使用说明精简版</h3>
+                    <p><strong>1. 查看手牌强度</strong></p>
+                    <p>手牌强度就是你的手牌面对任意牌型的综合强度，随着发牌和入池人数变化是会变化的，强度越高代表最后获胜的概率越高。</p>
+                    <p><strong>2. 查看概率选择行动</strong></p>
+                    <p>简单来说就是哪个概率高选哪个行动。当加注概率高于35%低于45%，是一个两可的选择，可以根据场上的玩家松紧程度判断自主选择是否加注。当加注概率高于46%一般代表必须下注，下注的大小就是左下方的GTO值的数字。</p>
+                    <p><strong>3. 参考EV值判断</strong></p>
+                    <p>如果两个行动概率差不多，可以根据EV值判断选择价值更高、风险更小的行动选项。如果有决心承担风险，也可以选择风险更大的，可能获取更多收益，但不建议经常进行这样高风险的行为。</p>
+                    <h3>核心功能设置</h3>
+                    <h4>EV权益</h4>
+                    <p>AI额外计算EV权益值（长期平均收益），并用绿色表示权益·正EV，红色表示风险·负EV。使用较高正EV行动将提高您的场均收益，负EV的行动可能会降低您的平均收益。</p>
+                    <h4>GTO建议</h4>
+                    <p>当您不确定如何加注时，AI会根据对手码量、手牌范围、后续可能行动等多个维度，基于GTO计算加注量。建议仅在加注概率高于33%选择加注行动时，参考该量进行加注。</p>
+                    <h4>辅助弃牌</h4>
+                    <p>辅助弃牌的弃牌概率一般设置为50%-70%，50-70%弃牌概率大约是33%的入池率（具体是否入池需要看手牌等各方面综合因素），越高入池率越高，越低入池率越低，可以根据实际情况自行调整，没有标准的数值。</p>
+                    <p>翻前自动弃牌：AI翻前分析弃牌概率高于设定百分比则进行自动弃牌。可开启声音/震动在需要行动时进行提醒。</p>
+                    <h4>激进度调整</h4>
+                    <p><strong>翻前：</strong>激进度2X-4X，对抗策略10%-45%</p>
+                    <p><strong>翻后：</strong>激进度3X-6X，对抗策略30%-60%</p>
+                    <p>激进度调整的是AI的对抗强度（增加AI的进攻、防守意识、增加手牌范围、抗诈唬/抓诈能力，提升码量波动等）。开启激进度后，可进一步调整AI的对抗策略，该参数代表AI在对抗中的策略变化，可对翻前/后分别提升或降低对抗策略的百分比，即为AI基于标准GTO策略上增加多少的混合策略（默认为35%），激进度1-10X则代表AI在分析中产生的主观意识放大的倍数，也代表GTO的偏离度。</p>
+                    <p><strong>特别提醒：</strong>激进度增加会增加筹码波动、底池膨胀。可根据场面、人数、对手级别自行调整。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chatHistory = [];
+        let currentReply = '';
+
+        // 移动端菜单切换
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const btn = document.getElementById('hamburgerBtn');
+            menu.classList.toggle('open');
+            btn.classList.toggle('open');
+        }
+
+        // 基础操作手册
+        function openManual() {
+            const modal = document.getElementById('manualModal');
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeManual() {
+            const modal = document.getElementById('manualModal');
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function switchTab(index) {
+            const tabs = document.querySelectorAll('.manual-tab');
+            const panels = document.querySelectorAll('.manual-panel');
+            
+            tabs.forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+            
+            panels.forEach((panel, i) => {
+                panel.classList.toggle('active', i === index);
+            });
+        }
+
+        // Toast 提示
+        function showToast(msg, duration = 2500) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), duration);
+        }
+
+        // 快捷键
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                askAI();
+            }
+        });
+
+        // AI 回答
+        async function askAI() {
+            const question = document.getElementById('userQuestion').value.trim();
+
+            if (!question) {
+                showToast('请先粘贴用户的问题！');
+                return;
+            }
+
+            document.getElementById('outputSection').classList.add('active');
+
+            const askBtn = document.getElementById('askBtn');
+            const originalText = askBtn.innerHTML;
+            askBtn.innerHTML = '<span class="loading"><span class="spinner"></span>AI 思考中...</span>';
+            askBtn.disabled = true;
+
+            document.getElementById('aiReply').textContent = '正在根据知识库生成回复...';
+
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                const reply = generateMockReply(question);
+                currentReply = reply.text;
+                document.getElementById('aiReply').textContent = reply.text;
+                document.getElementById('sourceType').textContent = reply.source;
+
+                addToHistory(question);
+
+            } catch (error) {
+                document.getElementById('aiReply').textContent = '抱歉，AI 暂时无法回复，请稍后重试。';
+            } finally {
+                askBtn.innerHTML = originalText;
+                askBtn.disabled = false;
+            }
+        }
+
+        let currentTone = 'standard';
+
+        function setTone(tone) {
+            currentTone = tone;
+            document.querySelectorAll('.tone-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.tone === tone) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            const question = document.getElementById('userQuestion').value.trim();
+            const outputSection = document.getElementById('outputSection');
+            if (question && outputSection.classList.contains('active')) {
+                const reply = generateMockReply(question);
+                currentReply = reply.text;
+                document.getElementById('aiReply').textContent = reply.text;
+                document.getElementById('sourceType').textContent = reply.source;
+            }
+        }
+
+        const knowledgeBase = [
+            {
+                keywords: ['什么是', '核心用途', '软件'],
+                replies: {
+                    standard: '您好！ALPHAX·阿尔法是一款正版AI云计算工具，核心是基于GTO博弈论最优策略和AI矩阵算法，帮助您进行GTO策略学习、技巧训练、对局分析和决策研究。简单说，它是一个学习研究工具，不是实战辅助外挂，也不会修改或干预任何第三方平台程序。使用效果因人而异，我们不承诺或保证任何具体结果，仅供学习研究使用。使用前也麻烦您自行了解并遵守当地法律法规哦~',
+                    friendly: '嗨！ALPHAX·阿尔法是一款超棒的AI学习工具，专门帮您学习GTO策略和提升决策能力～它可不是什么外挂哦，就是一个纯粹的学习研究工具，用起来很安全放心！效果因人而异，建议抱着学习的心态来用，收获会更大哒～',
+                    concise: 'ALPHAX是基于GTO博弈论的策略学习工具，用于技巧训练和决策研究，非外挂，仅供学习参考，不保证具体结果。',
+                    professional: 'ALPHAX·阿尔法是基于GTO博弈论最优策略与AI矩阵算法的正版云计算工具，核心功能涵盖策略学习、技巧训练、对局分析及决策研究。本工具仅用于学习研究目的，不构成任何操作建议，使用前请自行了解并遵守当地法律法规。'
+                },
+                source: '风险红线库'
+            },
+            {
+                keywords: ['外挂', '透视'],
+                replies: {
+                    standard: '您好！理解您的顾虑，请您放心，ALPHAX绝对不是外挂程序，也完全不具备任何透视功能。我们的软件不会修改、侵入任何第三方平台程序，不篡改安装包，不破坏数据签名，所有功能都只用于GTO策略学习和对局分析。温馨提示：市面上声称具备违规数据获取或结果保障功能的产品均存在欺诈风险，请提高警惕，避免上当受骗。',
+                    friendly: '亲～完全不用担心哦！ALPHAX绝对不是外挂，也没有透视功能哒！我们的软件只做学习研究，不会动任何第三方平台的数据，安全可靠～市面上那些说能透视、保证赢的产品都是骗人的，千万别上当！',
+                    concise: 'ALPHAX非外挂，无透视功能，不修改第三方程序，仅用于策略学习。',
+                    professional: 'ALPHAX明确声明：本产品非外挂程序，不具备任何数据透视功能。软件不修改、不侵入第三方平台程序，不篡改安装包及数据签名，所有功能仅用于GTO策略学习与对局分析。市场上声称具备违规数据获取或结果保障的产品存在欺诈风险，请提高警惕。'
+                },
+                source: '风险红线库'
+            },
+            {
+                keywords: ['检测', '封禁', '封号', '账号安全'],
+                replies: {
+                    standard: '您好！非常理解您对账号安全的重视和担心。各平台均拥有独立的风控系统与账号管理规则，其管理决策由平台依据自身规定独立作出，与ALPHAX无关。ALPHAX无法干预任何平台的账号管理结果，也不对此承担任何责任。如遇账号相关问题，请直接联系对应平台官方客服了解详情。\n\n为保障您的账号安全，建议您注意以下事项：\n1. 请遵守各平台的使用规则与相关法律法规，规范使用账号；\n2. 不要在同一设备上多开账号或共享同一网络环境；\n3. 使用软件时请允许获取必要权限，确保功能正常运行；\n4. 请勿使用模拟器、云手机等非原生环境；\n5. 请勿安装任何违规工具或非官方渠道的应用程序；\n6. 建议一个账号对应一个设备，规范使用。\n\n如因个人违规行为导致账号异常，需由用户自行承担相应责任。',
+                    friendly: '亲爱的，非常理解您对账号安全的关心！各平台都有自己的风控系统，账号管理是平台的独立决策，和我们软件无关哦。我们也无法干预平台的账号管理结果～\n\n为了您的账号安全，建议您：\n1. 遵守各平台规则和法律法规；\n2. 不要同一设备多开账号或共享网络；\n3. 允许软件获取必要权限；\n4. 不用模拟器、云手机；\n5. 不安装违规工具或非官方应用；\n6. 一个账号对应一个设备。\n\n如果因为个人违规导致账号异常，责任需要自行承担哦～',
+                    concise: '各平台独立管理账号，与ALPHAX无关，ALPHAX不承担责任。\n\n安全建议：遵守平台规则；不用模拟器/云手机；不多开账号；不安装违规工具；一账号对应一设备。违规导致异常自行承担责任。',
+                    professional: '关于账号安全：各平台拥有独立风控系统与账号管理规则，其管理决策由平台依据自身规定独立作出，与ALPHAX无关。ALPHAX无法干预任何平台的账号管理结果，也不对此承担任何责任。\n\n安全注意事项：\n1. 遵守平台规则与法律法规；\n2. 避免同一设备多开账号或共享网络环境；\n3. 允许软件获取必要权限；\n4. 禁止使用模拟器、云手机等非原生环境；\n5. 禁止安装违规工具或非官方渠道应用；\n6. 建议一账号对应一设备。\n\n个人违规行为导致账号异常，需自行承担相应责任。'
+                },
+                source: '风险红线库'
+            },
+            {
+                keywords: ['下载', '官方'],
+                replies: {
+                    standard: '您好！ALPHAX的官方下载地址是：https://alphax.net.cn，您可以通过这个链接下载适配iOS、安卓及电脑端的版本。重要提醒：请勿在第三方网站、网盘或非官方渠道下载，避免安装到盗版、捆绑软件或存在安全风险的版本。',
+                    friendly: '哈喽～官方下载地址在这里哦：https://alphax.net.cn，iOS、安卓、电脑版都能找到！一定要从官网下载，别去第三方网站或网盘，小心盗版和捆绑软件～',
+                    concise: '官方下载地址：https://alphax.net.cn，支持iOS、安卓、Windows、MacOS。请勿从第三方渠道下载。',
+                    professional: 'ALPHAX官方下载渠道：https://alphax.net.cn，提供iOS、Android、Windows、MacOS全平台客户端。重要提示：仅通过官方渠道获取安装包，避免第三方网站、网盘等非官方渠道带来的盗版、捆绑软件及安全风险。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['注册', '实名认证'],
+                replies: {
+                    standard: '您好！注册流程很简单，使用手机号接收验证码即可完成注册。首次登录后需进行实名认证，按照系统提示绑定真实姓名及身份证信息，否则将无法正常使用相关功能。实名认证主要用于落实国家实名制要求和保障账号安全。',
+                    friendly: '注册超简单的！用手机号收个验证码就行～首次登录需要实名认证，按提示绑定姓名和身份证就好啦，这是国家要求也是为了保护您的账号安全，放心哦～',
+                    concise: '手机号注册，首次登录需实名认证（姓名+身份证），用于落实实名制和保障账号安全。',
+                    professional: '注册流程：使用中国大陆手机号接收验证码完成注册。首次登录后需完成实名认证（绑定真实姓名及身份证信息），未完成实名认证将无法使用核心功能。实名认证用于落实国家互联网实名制要求及保障账号安全。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['会员', '版本', 'L0', 'L1', 'L2', 'L3', 'L4'],
+                replies: {
+                    standard: '您好！软件会员主要包含L0（试用版）、L1、L2、L3、L4五个版本。L0/L1是入门试用版本，仅支持翻前基础功能；L2支持多平台与GTO尺度建议；L3解锁全量功能，是性价比最高的主流选择；L4是最高性能版本，支持全部高阶功能。您可打开软件APP进入会员订阅页面查看详细功能对比。',
+                    friendly: '会员版本有五个哦：L0是试用版，L1/L2是入门级，L3功能最全性价比最高，L4是顶级版本～您可以在APP里查看每个版本的详细对比，选择最适合自己的就好！',
+                    concise: '会员版本：L0试用版、L1/L2入门版、L3全功能版、L4顶级版。L3性价比最高，详情见APP会员页面。',
+                    professional: '会员体系包含五个等级：L0（试用版）、L1、L2、L3、L4。L0/L1为入门级，仅支持翻前基础功能；L2支持多平台与GTO尺度建议；L3解锁全量功能，是主流推荐选择；L4为最高性能版本，支持全部高阶功能。详细功能对比请查阅APP会员订阅页面。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['算力', '消耗'],
+                replies: {
+                    standard: '您好！算力是使用ALPHAX进行GTO策略分析的专属消耗单位，当您调用AI对策略场景开展学习与演算分析时，系统会根据分析深度与阶段扣除对应算力。算力仅在AI分析运行时产生消耗，闲置未使用不会扣除。套餐及充值购买的算力长期保留不清零，仅限会员有效期内使用。',
+                    friendly: '算力就是咱们用AI分析策略时消耗的"能量"～分析一次扣一次，不用不扣，很公平的！买的算力会一直保留，只要会员没过期就能用，不用担心浪费～',
+                    concise: '算力是策略分析的消耗单位，仅分析时扣除，闲置不扣。购买的算力长期保留，会员有效期内使用。',
+                    professional: '算力定义：GTO策略分析的专属消耗单位，每次AI分析完成后根据分析深度与阶段扣除对应额度。算力仅在分析运行时消耗，闲置状态不产生扣除。套餐及充值算力长期保留不清零，仅限会员有效期内使用（到期冻结，续订后恢复）。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['退款'],
+                replies: {
+                    standard: '亲，若要退款，需提供以下凭证，符合要求才可办理：\n\n1. 完整主页面截图（打开软件有显示算力的页面）\n2. 复制UID（在算力下方板块，点击复制按钮获取）\n3. 激活、充值、升级等所有付款截图\n\n本软件为GTO博弈论学习研究工具，属于数字化服务类商品，不支持七天无理由退款。可申请退款的情况：1.自购买日起10天内，套餐剩余算力≥50%且无充值记录，可按剩余算力比例退款；2.购买后30天内完全未使用，可申请全额退款（扣除5%手续费）。已充值算力不支持退款。',
+                    friendly: '亲～申请退款需要准备以下凭证哦：\n\n1. 软件主页面截图（要能看到算力的页面）\n2. UID（在算力下面点击复制就能拿到）\n3. 所有付款截图（激活、充值、升级的都要哦）\n\n咱们软件是数字服务产品，不支持七天无理由退款哒～不过两种情况可以申请：10天内剩余算力≥50%且没充值过，或者30天内完全没用过。充值的算力是不退的哈～',
+                    concise: '退款需提供：1.主页面截图（显示算力）；2.UID；3.所有付款截图。\n\n不支持七天无理由退款。10天内剩余算力≥50%且无充值可按比例退；30天未使用可退（扣5%手续费）。充值算力不退。',
+                    professional: '退款申请需提供以下凭证：\n\n1. 软件主页面截图（含算力显示页面）\n2. UID（算力下方板块复制获取）\n3. 激活、充值、升级等所有付款截图\n\n退款政策：本软件为数字化服务类商品，不支持七天无理由退款。可申请退款情形：1.购买日起10天内，套餐剩余算力≥50%且无充值记录，按剩余算力比例退款；2.购买后30天内完全未使用，可申请全额退款（扣除5%手续费）。已充值算力一律不支持退款。'
+                },
+                source: '活动规则库'
+            },
+            {
+                keywords: ['验证码', '收不到'],
+                replies: {
+                    standard: '您好！请别担心，通常由以下原因导致：1.手机信号不佳，建议切换网络；2.短信被拦截，检查拦截记录；3.短信通道延迟，等待1-2分钟后重试；4.手机号填写错误；5.频繁请求被限制。如以上均无法解决，可提供完整手机号帮您排查。',
+                    friendly: '别着急呀！收不到验证码可能是这些原因：信号不好、短信被拦截、系统延迟、号码填错了，或者请求太频繁啦。您先按上面的方法试试，实在不行把手机号发给我，我帮您排查～',
+                    concise: '收不到验证码排查：切换网络、检查短信拦截、等待1-2分钟重试、确认手机号正确。仍有问题提供手机号排查。',
+                    professional: '验证码接收问题排查：1.网络信号问题，建议切换WiFi/移动数据；2.短信被拦截，检查手机拦截记录；3.通道延迟，等待1-2分钟后重试；4.手机号填写错误，确认区号及号码正确性；5.频繁请求限制，1分钟内多次请求会触发限流。以上方案均无效时，可提供完整手机号进行技术排查。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['胜率', '稳赢'],
+                replies: {
+                    standard: '您好！非常理解您对效果的关心。ALPHAX是GTO策略学习和训练工具，帮助用户理解博弈论均衡策略的思路和逻辑。软件仅供学习研究参考使用，不承诺任何胜率提升或稳赢结果，所有分析结果仅供学习参考，不构成任何操作建议。',
+                    friendly: '特别理解您想提升效果的心情！不过ALPHAX是学习工具，帮您理解策略思路，不是保证赢的工具哦～建议抱着学习研究的心态来用，长期坚持会有收获的！',
+                    concise: 'ALPHAX是策略学习工具，不承诺胜率提升或稳赢结果，分析结果仅供学习参考。',
+                    professional: '关于效果承诺：ALPHAX为GTO策略学习与训练工具，旨在帮助用户理解博弈论均衡策略的思路与逻辑。本工具仅供学习研究参考，不承诺任何胜率提升或稳赢结果，所有分析结果不构成任何操作建议。'
+                },
+                source: '风险红线库'
+            },
+            {
+                keywords: ['软件无法打开', '黑屏', '白屏', '卡顿', '卡'],
+                replies: {
+                    standard: '您好！请按以下步骤尝试：1.切换网络（WiFi和5G）；2.点击APP刷新按钮；3.关闭APP后重启；4.开启/关闭飞行模式；5.切换APP线路或节点；6.卸载重装APP；7.换时间段重试。以上方式仍未解决请联系客服提供UID和问题截图。',
+                    friendly: '哎呀，遇到问题别慌！试试这些方法：切换网络、刷新APP、重启、开关飞行模式、换线路，实在不行卸载重装或者换个时间再试。还解决不了的话把UID和截图发给我，我帮您找技术大大～',
+                    concise: '故障排查：切换网络、刷新、重启APP、开关飞行模式、换线路、卸载重装、换时间段。仍未解决请提供UID和截图。',
+                    professional: '故障排查步骤：1.网络切换（WiFi/5G）；2.APP内刷新；3.重启应用；4.飞行模式重置网络；5.切换APP线路/节点；6.卸载重装；7.错峰重试。以上方案无效时，请提供UID及问题截图进行技术排查。'
+                },
+                source: '疑难沉淀库'
+            },
+            {
+                keywords: ['辅助弃牌'],
+                replies: {
+                    standard: '您好！辅助弃牌是L3/L4版本的GTO学习辅助功能：AI进行GTO策略分析时，当弃牌选项的GTO概率高于设定阈值，会提供弃牌建议供学习参考。阈值可在设置中自行调整，建议弃牌率设置为50%-70%。',
+                    friendly: '辅助弃牌是L3/L4版本的贴心功能～AI分析后，如果弃牌概率超过您设定的数值，就会建议您弃牌，帮您学习最优决策！建议设50%-70%哦，您可以自己调整试试～',
+                    concise: '辅助弃牌（L3/L4）：弃牌概率超阈值时提供弃牌建议，建议阈值50%-70%，可自行调整。',
+                    professional: '辅助弃牌功能（L3/L4版本专属）：AI进行GTO策略分析时，当弃牌选项的GTO概率高于用户设定阈值，系统提供弃牌建议供学习参考。阈值可自定义调整，推荐设置范围50%-70%。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['对抗策略'],
+                replies: {
+                    standard: '您好！对抗策略是L4版本专属功能，开启后可调整AI在策略分析中的变化幅度（默认35%），即基于标准GTO策略增加的混合策略变体。参数1-10X代表策略调整的幅度倍数，建议设置：翻前10-45%，翻后30-60%。',
+                    friendly: '对抗策略是L4版本的高级功能哦！开启后可以让AI策略更灵活多变，参数越大变化越明显～建议翻前设10-45%，翻后设30-60%，您可以根据对手风格调整～',
+                    concise: '对抗策略（L4专属）：调整AI策略变化幅度（默认35%），1-10X为调整倍数。建议翻前10-45%，翻后30-60%。',
+                    professional: '对抗策略功能（L4版本专属）：开启后可调整AI策略分析的变化幅度（默认35%），即基于标准GTO策略增加的混合策略变体。参数1-10X代表策略调整幅度倍数，建议设置范围：翻前10%-45%，翻后30%-60%。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['GTO', 'Q值', 'EV', '术语'],
+                replies: {
+                    standard: '您好！GTO即博弈论最优策略，是一套均衡、严谨的决策逻辑体系；Q值代表当前手牌的强度评分；EV即期望价值，是策略层面的综合收益预期。以上均为策略学习与数据分析术语，仅用于GTO理论研究、思路训练与复盘参考。',
+                    friendly: 'GTO就是博弈论最优策略，一套很厉害的决策方法～Q值是手牌强度评分，EV是期望价值。这些都是学习策略的专业术语，用来帮咱们更好地理解和分析对局哒～',
+                    concise: 'GTO：博弈论最优策略；Q值：手牌强度评分；EV：期望价值。均为策略学习术语，仅供研究参考。',
+                    professional: '术语定义：GTO（博弈论最优策略）：一套均衡、严谨的决策逻辑体系；Q值：当前手牌强度评分；EV（期望价值）：策略层面的综合收益预期。以上术语均用于GTO理论研究、思路训练与复盘参考。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['入池率', '弃牌概率'],
+                replies: {
+                    standard: '您好！标准入池率约为33%，建议弃牌率设置为50%-70%。弃牌率越高，入池率越低；弃牌率越低，入池率越高。具体是否入池还须结合手牌、位置等综合判断。如需更激进的打法，可适当调高翻后对抗参数（仅L4支持）。',
+                    friendly: '标准入池率大概33%左右，弃牌率建议设50%-70%～弃牌率越高，入池的牌越少；越低则入池越多。具体还要看手牌和位置哦～想打得更凶可以调高对抗参数（L4才行）～',
+                    concise: '标准入池率约33%，建议弃牌率50%-70%。弃牌率与入池率负相关，具体结合手牌位置判断。L4可调高对抗参数。',
+                    professional: '入池率与弃牌概率：标准入池率约33%，推荐弃牌率设置范围50%-70%。弃牌率与入池率呈负相关关系。入池决策需结合手牌强度、位置等因素综合判断。L4版本支持调整翻后对抗参数以实现更激进的打法风格。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['支持', '设备', '系统'],
+                replies: {
+                    standard: '您好！ALPHAX已适配主流设备，支持安卓、iOS、Windows、MacOS全系统，各平台均有独立客户端，下载请前往官方地址https://alphax.net.cn获取对应版本。',
+                    friendly: '咱们软件支持好多设备呢！安卓、苹果手机，还有Windows和Mac电脑都能用～每个平台都有专门的版本，去官网下载就好啦～',
+                    concise: '支持安卓、iOS、Windows、MacOS全系统，各平台有独立客户端，官方下载地址https://alphax.net.cn。',
+                    professional: '设备兼容性：ALPHAX已适配安卓、iOS、Windows、MacOS全系统，各平台提供独立客户端。请前往官方地址https://alphax.net.cn下载对应平台版本。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['实名认证', '更换', '解绑'],
+                replies: {
+                    standard: '您好！根据《用户协议》约定，注册时提供的初始信息（包括实名认证信息）在注册完成后无法修改或解绑，因此实名认证信息不支持单独解绑或更换。这是为了保障您的账号安全，感谢理解！',
+                    friendly: '亲爱的，实名认证信息一旦绑定就不能改啦，这是《用户协议》里规定的，也是为了保护您的账号安全～请理解哦～',
+                    concise: '根据用户协议，实名认证信息注册后无法修改或解绑，旨在保障账号安全。',
+                    professional: '实名认证变更：根据《用户协议》第六条约定，注册时提供的初始信息（含实名认证信息）在注册完成后无法修改或解绑。此规定旨在保障账号安全及算力归属清晰。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['手机号', '更换'],
+                replies: {
+                    standard: '您好！根据《用户协议》约定，账号注册时的初始信息在注册完成后无法修改，手机号作为账号注册信息的一部分，暂不支持直接更换。建议您妥善保管注册手机号，如有特殊情况可联系客服反馈。',
+                    friendly: '手机号目前还不能更换哦，这是注册时的初始信息，协议里规定不能改哒。建议您好好保管注册用的手机号，如果有特殊情况可以找客服商量～',
+                    concise: '手机号作为注册初始信息，暂不支持更换。建议妥善保管，特殊情况联系客服。',
+                    professional: '手机号变更：根据《用户协议》第六条约定，账号注册时的初始信息在注册完成后无法修改。手机号作为注册信息的一部分，暂不支持直接更换。建议妥善保管注册手机号，特殊情况可联系客服反馈。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['账号', '共享', '出租', '借用'],
+                replies: {
+                    standard: '您好！根据《用户协议》约定，用户应妥善保管账号，不得与他人共享。账号出租、借用或共享给他人，不仅会因多设备登录触发账号异常限制，由此产生的盗号、数据泄露及其他损失，均需由您自行承担全部责任。',
+                    friendly: '账号是专属您的哦，不能共享、出租或者借给别人～不然会触发账号异常，万一被盗号或者数据泄露，损失都要您自己承担呢，一定要保管好！',
+                    concise: '账号不得共享、出租、借用，否则触发异常限制，相关损失自行承担。',
+                    professional: '账号使用规范：根据《用户协议》第六条第6.10款约定，用户应妥善保管账号，不得与他人共享。账号出租、借用或共享将触发多设备登录异常限制，由此产生的盗号、数据泄露及其他损失由用户自行承担全部责任。'
+                },
+                source: '风险红线库'
+            },
+            {
+                keywords: ['设备上限', '登录设备'],
+                replies: {
+                    standard: '您好！当登录设备达到上限时，可在「退出登录」页面选择「所有设备」强制退出所有已登录设备，释放名额后重新登录；或选择「当前设备」仅退出当前设备。建议一个账号对应一个固定设备使用。',
+                    friendly: '设备上限啦？没关系！去「退出登录」页面选「所有设备」就能强制退出所有登录，释放名额后重新登录就行～建议一个账号固定用一个设备哦，这样更稳定～',
+                    concise: '设备达上限时，在退出登录页面选"所有设备"强制退出释放名额。建议一账号对应一固定设备。',
+                    professional: '设备管理：登录设备达上限时，可在「退出登录」页面执行操作：选择「所有设备」强制退出全部已登录设备并释放名额；或选择「当前设备」仅退出当前设备。建议一个账号对应一个固定设备使用，避免多设备切换导致登录异常。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['试用版', '免费'],
+                replies: {
+                    standard: '您好！ALPHAX的T4体验版为付费体验服务，功能与L4完全一致，限时20分钟。L0试用版有效期为30天，包含600算力，到期后无法继续使用，不可重复开通，也不能充值算力。L0仅支持手牌强度、翻前AIGTO分析、翻前EV权益计算，不支持高级功能。',
+                    friendly: 'T4体验版是付费的，和L4功能一样但只有20分钟～L0试用版免费，有30天有效期和600算力，到期就不能用啦，也不能重复开通。L0只有基础功能，高级功能要升级才行哦～',
+                    concise: 'T4体验版付费（20分钟，L4功能）；L0试用版免费（30天，600算力，基础功能），到期不可续，不可充值算力。',
+                    professional: '试用服务说明：T4体验版为付费体验服务，功能与L4版本完全一致，限时20分钟；L0试用版有效期30天，包含600算力，到期后无法继续使用，不可重复开通且不能充值算力。L0版本仅支持手牌强度、翻前AIGTO分析、翻前EV权益计算，不支持高级功能。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['升级', '降级'],
+                replies: {
+                    standard: '您好！会员版本支持升级，升级时按当前已激活版本与目标版本的差价补款即可。会员版本不支持主动降级，降级将导致高阶功能与推理模型无法使用，且不支持退还差价。',
+                    friendly: '升级很方便，补差价就行～但是不能主动降级哦，降级了高阶功能就用不了，差价也不退。建议选好版本再激活～',
+                    concise: '支持升级（补差价），不支持主动降级，降级后高阶功能不可用且不退差价。',
+                    professional: '版本变更：会员版本支持升级，按当前版本与目标版本的差价补款即可。会员版本不支持主动降级，降级将导致高阶功能与推理模型无法使用，且不支持退还差价。建议激活前确认版本需求。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['算力充值', '价格', '如何充值', '充值流程'],
+                replies: {
+                    standard: '您好！充值流程很简单：打开ALPHAX APP，进入「会员订阅」页面，选择「算力充值」，根据需求选择充值档位（¥680、¥980、¥1580、¥2580、¥3680五档），点击立即充值，使用支付宝完成支付即可。充值成功后算力即时到账，可在主页面查看余额。',
+                    friendly: '充值超简单的！打开APP→进「会员订阅」→点「算力充值」→选档位（680/980/1580/2580/3680元）→支付宝支付～充值成功马上到账哦～',
+                    concise: '充值流程：APP→会员订阅→算力充值→选择档位→支付宝支付。五档可选：¥680、¥980、¥1580、¥2580、¥3680。',
+                    professional: '充值操作：打开ALPHAX APP→进入「会员订阅」页面→选择「算力充值」→选择充值档位（¥680、¥980、¥1580、¥2580、¥3680）→使用支付宝完成支付。充值成功后算力即时到账。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['境外', '国外'],
+                replies: {
+                    standard: '您好！境外用户可正常使用ALPHAX。若需要在境外使用，可开通对应地区加速服务，只需提供软件主页截图和UID，联系客服即可协助办理。使用期间请保持IP与定位地区一致。境外相关订单暂不支持退款。',
+                    friendly: '境外也能用哦！需要开通对应地区的加速服务，把软件主页截图和UID发给客服就行～使用时注意IP和定位要一致。境外订单目前不能退款哦～',
+                    concise: '境外可用，需开通地区加速（提供截图和UID），保持IP与定位一致。境外订单暂不支持退款。',
+                    professional: '境外使用：境外用户可正常使用ALPHAX，需开通对应地区加速服务，提供软件主页截图及UID联系客服办理。使用期间需保持IP与定位地区一致。境外相关订单暂不支持退款。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['iOS', '苹果'],
+                replies: {
+                    standard: '您好！iOS用户使用时请注意：1.建议在真实设备上运行，不要使用模拟器或云手机；2.使用时请允许获取地理位置权限；3.不建议频繁切换账号；4.不要多设备共用同一IP；5.手机上不要安装NZT、H2N等相关软件；6.不要使用VPN；7.账号请勿长时间在线。',
+                    friendly: '苹果用户注意啦！要用真实设备，别用模拟器；允许定位权限；不要频繁换账号、多设备共用IP；别装NZT/H2N这些软件；不要用VPN；账号别长时间在线～',
+                    concise: 'iOS使用注意：用真实设备，允许定位，不频繁切换账号，不多设备共用IP，不装NZT/H2N，不用VPN，不长时间在线。',
+                    professional: 'iOS使用规范：1.使用真实设备，禁止模拟器或云手机；2.允许地理位置权限；3.避免频繁切换账号；4.禁止多设备共用同一IP；5.禁止安装NZT、H2N等相关软件；6.禁止使用VPN；7.避免账号长时间在线。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['模拟器'],
+                replies: {
+                    standard: '您好！使用ALPHAX不需要模拟器。市面上主流平台的安全系统均会检测模拟器环境，在模拟器中运行软件可能触发平台安全风控，影响账号正常使用。建议在真实设备上运行，以获得最佳体验。',
+                    friendly: '完全不需要模拟器哦！主流平台都会检测模拟器，用模拟器可能会影响账号安全。建议用真实设备，体验更好也更安全～',
+                    concise: '不需要模拟器，模拟器会触发平台风控影响账号安全，建议使用真实设备。',
+                    professional: '模拟器使用：ALPHAX无需模拟器运行。主流平台安全系统均具备模拟器检测能力，在模拟器环境运行可能触发平台安全风控，影响账号正常使用。建议在真实设备上运行以获得最佳体验。'
+                },
+                source: '风险红线库'
+            },
+            {
+                keywords: ['推荐', '奖励', '好友'],
+                replies: {
+                    standard: '您好！平台长期设有用户推荐福利活动，成功推荐好友完成软件激活并开通对应服务后，邀请人可获赠对应算力点数奖励：好友开通L4版本可获2000点数，L3版本可获1000点数，L2版本可获500点数。点数可用于算力消耗。',
+                    friendly: '推荐好友有奖励哦！成功推荐好友激活并开通服务，L4给2000点数，L3给1000，L2给500～点数可以当算力用，超划算！',
+                    concise: '推荐奖励：L4=2000点数，L3=1000点数，L2=500点数，点数可用于算力消耗。',
+                    professional: '推荐奖励计划：平台长期开展用户推荐福利活动，成功推荐好友完成软件激活并开通对应服务后，邀请人获赠算力点数：L4版本2000点数，L3版本1000点数，L2版本500点数。奖励点数可用于GTO策略分析的算力消耗。'
+                },
+                source: '活动规则库'
+            },
+            {
+                keywords: ['注销', '账号'],
+                replies: {
+                    standard: '您好！注销账号是不可逆操作，请您务必确认。注销后果：账号内所有信息、订阅权限、算力余额将永久清空且无法恢复；该账号的实名信息将永久失效；注销后不支持任何形式的数据恢复。如您确认注销，需提供UID、手机号、实名姓名、身份证后四位、最近一笔消费截图。',
+                    friendly: '注销账号是不可逆的哦，一旦注销什么都找不回来了！包括账号信息、权限、算力都会永久清空，实名信息也会失效。如果确定要注销，请准备好UID、手机号、实名姓名、身份证后四位和最近消费截图～',
+                    concise: '注销不可逆，将清空所有信息、权限、算力，实名失效。需提供UID、手机号、实名姓名、身份证后四位、消费截图。',
+                    professional: '账号注销：注销为不可逆操作，注销后账号内所有信息、订阅权限、算力余额将永久清空且无法恢复，实名信息将永久失效。注销需提供：UID、绑定手机号、实名姓名、身份证后四位、最近一笔消费截图（含订单号、金额、时间）。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['用户协议'],
+                replies: {
+                    standard: '您好！用户协议是您与ALPHAX之间关于软件使用的服务协议，规定了双方的权利义务、软件使用规范、隐私保护、责任边界等条款。当您注册账号并使用软件时，即表示已阅读、理解并同意遵守该协议的全部内容。',
+                    friendly: '用户协议是咱们和ALPHAX之间的服务约定，里面写了双方的权利义务、使用规范、隐私保护这些内容。注册账号使用软件就代表您同意啦，建议注册前仔细看看～',
+                    concise: '用户协议规定双方权利义务、使用规范、隐私保护、责任边界。注册使用即表示同意遵守。',
+                    professional: '用户协议：系用户与ALPHAX之间的服务协议，涵盖双方权利义务、软件使用规范、隐私保护、责任边界等条款。用户注册账号并使用软件即视为已阅读、理解并同意遵守协议全部内容。'
+                },
+                source: '风险红线库'
+            },
+            {
+                keywords: ['隐私', '数据'],
+                replies: {
+                    standard: '您好！您的隐私安全是我们最重视的事。为保障服务正常运行，软件会收集必要信息：账号信息（手机号、实名认证信息）、设备信息、使用数据、日志信息。我们采用加密存储、权限隔离等技术手段保护您的数据安全，不会将您的信息出售或未经同意提供给第三方。',
+                    friendly: '您的隐私我们超级重视！只会收集必要的信息：手机号、实名信息、设备信息、使用记录和日志。我们用加密和权限隔离保护您的数据，绝对不会出售或随便给别人～',
+                    concise: '仅收集必要信息：账号信息、设备信息、使用数据、日志信息。采用加密存储保护，不会出售或提供给第三方。',
+                    professional: '隐私保护：软件仅收集必要信息以保障服务运行：账号信息（手机号、实名认证信息）、设备信息、使用数据、日志信息。采用加密存储、权限隔离等技术手段保护数据安全，不会出售或未经同意向第三方提供用户信息。'
+                },
+                source: '风险红线库'
+            },
+            {
+                keywords: ['违规使用'],
+                replies: {
+                    standard: '您好！ALPHAX是专业的GTO策略学习工具，旨在帮助用户提升策略水平。使用场景必须合法合规，禁止将本软件用于任何违规或不当用途。一经发现账号存在违规使用行为，账号将被立即封禁，并保留向相关部门报告的权利。',
+                    friendly: 'ALPHAX是正经的学习工具，一定要合法合规使用哦！严禁用它做违规的事～一旦发现违规，账号会被封禁，还可能向相关部门报告呢，千万不要冒险！',
+                    concise: '必须合法合规使用，禁止违规用途。违规将封禁账号并保留报告权利。',
+                    professional: '合规要求：ALPHAX为专业GTO策略学习工具，旨在帮助用户提升策略水平。使用场景必须合法合规，禁止任何违规或不当用途。一经发现违规使用行为，账号将被立即封禁，并保留向相关部门报告的权利。'
+                },
+                source: '风险红线库'
+            },
+            {
+                keywords: ['支付', '支付宝'],
+                replies: {
+                    standard: '您好！目前订阅仅支持支付宝支付，暂不支持微信等其他方式。支付宝达到限额，请联系支付宝客服申请解除限额后再支付。',
+                    friendly: '目前只支持支付宝支付哦，微信暂时还不行～如果支付宝限额了，联系支付宝客服解除限额就好啦～',
+                    concise: '仅支持支付宝支付，支付宝限额联系支付宝客服解除。',
+                    professional: '支付方式：目前订阅仅支持支付宝支付，暂不支持微信等其他支付渠道。支付宝达到限额时，请联系支付宝客服申请解除限额后再进行支付。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['短牌'],
+                replies: {
+                    standard: '您好！暂不支持短牌功能，我们会持续优化产品功能，感谢您的理解！',
+                    friendly: '短牌功能目前还不支持哦～我们会继续优化产品，以后可能会加上，感谢理解！',
+                    concise: '暂不支持短牌功能，将持续优化产品。',
+                    professional: '功能说明：暂不支持短牌功能，产品将持续优化更新，敬请期待。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['切换平台', '更换账号'],
+                replies: {
+                    standard: '您好！若需要更换账号使用，需卸载软件后重新安装，再登录新账号即可。为保障账号安全，请规范操作。',
+                    friendly: '要换账号的话，卸载软件重新安装，然后登录新账号就行啦～记得规范操作，保护账号安全哦～',
+                    concise: '更换账号需卸载重装后登录新账号，建议规范操作保障安全。',
+                    professional: '账号更换：需卸载软件后重新安装，再登录新账号。建议规范操作以保障账号安全。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['合作', '代理'],
+                replies: {
+                    standard: '您好！感谢您对ALPHAX的关注与支持！商务合作请联系：support@alphax.net',
+                    friendly: '感谢您的关注！商务合作请发邮件到support@alphax.net，我们会及时回复～',
+                    concise: '商务合作请联系：support@alphax.net',
+                    professional: '商务合作：感谢您对ALPHAX的关注与支持，商务合作咨询请发送邮件至support@alphax.net'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['参考价值', '实际帮助', '学习帮助'],
+                replies: {
+                    standard: '您好！ALPHAX是一款基于GTO博弈论的策略学习工具，最大的价值就是帮助您系统地理解和学习最优打法思路，提升策略分析和决策能力。软件提供的所有数据都是学习参考用途，我们不做任何结果保证，建议您以学习研究的态度来使用，效果会更好~',
+                    friendly: '亲爱的～ALPHAX最大的价值就是帮您系统学习最优策略思路，提升决策能力！所有数据都是学习参考，建议抱着研究的心态来用，收获会更大哦～',
+                    concise: '帮助系统理解GTO策略，提升决策能力。所有数据仅供学习参考，不做结果保证。',
+                    professional: 'ALPHAX的核心价值：帮助用户系统理解和学习GTO最优策略思路，提升策略分析与决策能力。所有数据均为学习参考用途，不做任何结果保证。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['EVQ', '术语'],
+                replies: {
+                    standard: '您好！GTO即博弈论最优策略，Q值代表手牌强度评分，EV即期望价值，EVQ是结合手牌强度与场景逻辑的综合权益评分。以上均为策略学习与数据分析术语，仅用于GTO理论研究、思路训练与复盘参考。',
+                    friendly: 'GTO是博弈论最优策略，Q值是手牌强度评分，EV是期望价值，EVQ是综合权益评分～这些都是学习策略的专业术语哦～',
+                    concise: 'GTO：博弈论最优策略；Q值：手牌强度；EV：期望价值；EVQ：综合权益评分。仅供研究参考。',
+                    professional: '术语定义：GTO（博弈论最优策略）、Q值（手牌强度评分）、EV（期望价值）、EVQ（综合权益评分）。均用于GTO理论研究与复盘参考。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['境外手机号', '海外手机号', '国外手机号'],
+                replies: {
+                    standard: '您好！很抱歉，目前ALPHAX仅支持中国大陆手机号注册，暂不支持海外手机号。如果您有使用需求，需要先准备一个中国大陆手机号才能完成注册哦。',
+                    friendly: '亲～目前只支持中国大陆手机号注册哦，海外手机号暂时用不了～您可以准备一个大陆手机号再来注册～',
+                    concise: '仅支持中国大陆手机号注册，暂不支持海外手机号。',
+                    professional: '注册限制：ALPHAX仅支持中国大陆手机号注册，暂不支持海外手机号。需准备中国大陆手机号完成注册。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['多设备登录', '同时登录', '设备数量'],
+                replies: {
+                    standard: '您好！为保障您的账号使用安全和系统服务稳定，目前同一账号仅支持单台设备登录使用，不支持多设备同时在线。如果您需要在新设备上登录，已登录的旧设备需要手动退出登录哦。',
+                    friendly: '亲爱的，一个账号只能在一台设备上登录哦～要换设备的话，先在旧设备上退出登录就好啦～',
+                    concise: '同一账号仅支持单台设备登录，新设备登录需先退出旧设备。',
+                    professional: '设备登录限制：同一账号仅支持单台设备登录，不支持多设备同时在线。新设备登录前需手动退出旧设备登录。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['版本区别', '推荐版本', '版本选择'],
+                replies: {
+                    standard: '您好！L0/L1是入门试用版本，仅支持翻前基础功能；L2支持多平台与GTO尺度建议；L3解锁全量功能，是性价比最高的主流选择；L4是最高性能版本，支持全部高阶功能。大多数日常使用的用户推荐选择L3版本，您可打开软件APP进入会员订阅页面查看详细功能对比。',
+                    friendly: '版本区别很清楚哦～L0/L1是入门版，L2多平台，L3功能最全性价比最高，L4顶级版本～日常用选L3最合适啦～',
+                    concise: 'L0/L1入门版，L2多平台，L3全功能（推荐），L4顶级版。详情见APP会员页面。',
+                    professional: '版本差异：L0/L1入门试用版（翻前基础功能）；L2支持多平台与GTO尺度建议；L3解锁全量功能（主流推荐）；L4最高性能版本（全部高阶功能）。建议日常使用选择L3版本。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['L3 L4区别', 'L3和L4', 'L3对比L4'],
+                replies: {
+                    standard: '您好！L3和L4的核心区别主要体现在推理模型性能、功能权限和算力消耗上：L4搭载更高阶的推理模型，性能更强，解锁对抗策略等全部高阶功能；L3已解锁完整的主流GTO功能，是兼顾性能与成本的主流选择。您可打开软件APP进入会员订阅页面查看详细功能对比。',
+                    friendly: 'L3和L4的区别就是性能和功能～L4有更强的模型和全部高阶功能（比如对抗策略），L3功能已经很全啦，性价比最高～',
+                    concise: 'L4：高阶模型，全部功能；L3：主流功能，性价比高。详情见APP。',
+                    professional: 'L3与L4区别：L4搭载更高阶推理模型，解锁对抗策略等全部高阶功能，算力消耗更高；L3已解锁完整主流GTO功能，是兼顾性能与成本的选择。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['L4贵', 'L4算力消耗', '为什么L4贵'],
+                replies: {
+                    standard: '您好！因为L4搭载了性能更强的高阶推理模型，解算精度、复杂场景覆盖和计算量都远高于L3，更高的算力消耗对应着更强的处理能力和更精准的策略输出，所以定价和算力消耗也相应更高。您可打开软件APP进入会员订阅页面查看详细性能与功能说明。',
+                    friendly: 'L4贵是因为模型更厉害～解算精度更高，能处理更复杂的场景，算力消耗自然也更多～物有所值哦～',
+                    concise: 'L4搭载高阶模型，解算精度更高，复杂场景覆盖更广，算力消耗更高，故定价更高。',
+                    professional: 'L4定价与算力较高原因：搭载更高阶推理模型，解算精度、复杂场景覆盖及计算量均高于L3，对应更强处理能力与精准策略输出。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['低版本使用高版本', '跨版本功能'],
+                replies: {
+                    standard: '您好！低版本会员无法使用高版本会员的专属功能，各版本的功能权限、推理模型性能都是独立区分的。如需使用高版本功能，您可打开软件APP进入会员订阅页面升级到对应版本后使用，升级只需补差价。',
+                    friendly: '低版本不能用高版本的功能哦～每个版本的权限是独立的～想升级的话补差价就行，很方便～',
+                    concise: '低版本无法使用高版本功能，需升级补差价。',
+                    professional: '版本权限限制：低版本会员无法使用高版本专属功能，各版本功能权限与推理模型性能独立区分。升级需补差价。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['L4切换L3', '省算力', '切换模式'],
+                replies: {
+                    standard: '您好！L4会员不支持切换到L3模式，各版本的推理模型与算力消耗是固定的，无法跨版本降低算力消耗。',
+                    friendly: 'L4不能切换到L3模式哦～每个版本的模型和算力消耗是固定的，没办法跨版本省算力～',
+                    concise: 'L4不支持切换到L3模式，模型与算力消耗固定。',
+                    professional: 'L4模式限制：L4会员不支持切换到L3模式，各版本推理模型与算力消耗固定，无法跨版本降低消耗。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['永久有效', '终身', '会员有效期'],
+                replies: {
+                    standard: '您好！会员版本并非终身/永久有效，会员订阅有固定有效期，到期后会员权益与专属功能将无法继续使用，算力也仅能在会员有效期内消耗使用。您可打开软件APP进入会员订阅页面查看当前版本的有效期与续费说明。',
+                    friendly: '会员不是永久有效的哦～有固定有效期，到期后功能就用不了啦～记得及时续费～',
+                    concise: '会员非永久有效，有固定有效期，到期需续费。算力仅会员期内使用。',
+                    professional: '会员有效期：会员版本非终身/永久有效，订阅有固定有效期。到期后权益与功能无法使用，算力仅在有效期内消耗。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['充值优惠', '老用户赠送', '促销'],
+                replies: {
+                    standard: '您好！官方无促销活动，价格以APP内标注为准。感谢您的理解与支持！',
+                    friendly: '目前没有促销活动哦，价格以APP里显示的为准～感谢支持～',
+                    concise: '官方无促销活动，价格以APP内标注为准。',
+                    professional: '促销政策：官方无促销活动，价格以APP内实时标注为准。'
+                },
+                source: '活动规则库'
+            },
+            {
+                keywords: ['版本和算力区别', '订阅版本', '充值算力'],
+                replies: {
+                    standard: '您好！激活版本=使用权限（包含软件授权、技术服务及初始算力）；充值算力=使用次数（AI分析计算的消耗资源）。简单理解：版本是权限，算力是使用次数。两者为独立场景，规则需区分执行。',
+                    friendly: '版本和算力是分开的哦～版本是使用权限，算力是使用次数～两者规则不一样～',
+                    concise: '版本=使用权限（含初始算力）；算力=使用次数。两者独立，规则不同。',
+                    professional: '版本与算力区别：激活版本=使用权限（含软件授权、技术服务及初始算力）；充值算力=使用次数（AI分析消耗资源）。两者独立场景，规则区分执行。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['使用教程', '资料', '新手教程'],
+                replies: {
+                    standard: '您好！激活会员后，您可联系官方客服获取新手教程，并享有专属客服一对一指导，全程协助您顺利上手使用软件。',
+                    friendly: '激活会员后找客服要教程就行啦～还有专属客服一对一指导，帮您快速上手～',
+                    concise: '激活会员后联系客服获取教程，享一对一指导。',
+                    professional: '教程获取：激活会员后联系官方客服获取新手教程，享有专属客服一对一指导。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['算力消耗方式', '算力计算', '牌局大小'],
+                replies: {
+                    standard: '您好！算力在每次AI完成GTO策略分析后扣除，提前弃牌或网络异常不扣费。算力消耗仅与您激活的会员版本相关，与对局具体情况无关，具体请在APP「会员订阅→算力消耗」页面查看。',
+                    friendly: '算力是AI分析完一次扣一次～提前弃牌或者网络异常不扣费哦～消耗只和版本有关，和牌局大小没关系～',
+                    concise: 'AI分析完成后扣费，提前弃牌/网络异常不扣。消耗与版本相关，与牌局无关。',
+                    professional: '算力消耗规则：每次AI分析完成后扣除，提前弃牌或网络异常不扣费。消耗仅与会员版本相关，与对局情况无关。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['算力消耗数据', '一手牌消耗', '各阶段算力'],
+                replies: {
+                    standard: '您好！各阶段算力消耗因会员版本不同而有所差异，具体消耗标准请在APP内「会员订阅→算力消耗」页面查看。以L2版本为例，进行2局对战训练（约140手牌）累计消耗约296算力，平均每手约2.1算力，仅供参考。',
+                    friendly: '算力消耗每个版本不一样哦～具体数据在APP里看～L2版本大概每手2.1算力～',
+                    concise: '各版本算力消耗不同，详情见APP。L2约2.1算力/手牌（参考）。',
+                    professional: '算力消耗数据：各版本消耗标准不同，请查阅APP「会员订阅→算力消耗」页面。L2版本参考：约2.1算力/手牌。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['算力有效期', '会员到期', '算力冻结'],
+                replies: {
+                    standard: '您好！套餐及充值购买的算力长期保留不清零，仅限会员有效期内使用（到期后冻结、续订后恢复）；每月配额算力当月有效、优先消耗、月底清零、次月可重新领取。',
+                    friendly: '买的算力会一直保留，会员到期就冻结，续订后就能用～每月免费算力当月有效，月底清零～',
+                    concise: '购买算力长期保留（会员期内使用，到期冻结）；每月配额算力当月有效，月底清零。',
+                    professional: '算力有效期：购买算力长期保留不清零，仅限会员有效期内使用（到期冻结、续订恢复）；每月配额算力当月有效、月底清零。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['每月免费算力', '领取算力', '免费算力'],
+                replies: {
+                    standard: '您好！会员订阅后次月起可在APP主页面自助领取每月免费算力（订阅购买超过30天即可领取），每个账号一年内最多可领取11次，当月有效、优先消耗、月底清零，不可累积。',
+                    friendly: '订阅后次月就能领免费算力啦～一年最多领11次，当月用完，月底清零～记得及时领哦～',
+                    concise: '订阅次月起可领取免费算力，一年最多11次，当月有效，月底清零。',
+                    professional: '免费算力领取：订阅次月起可在APP主页面领取，订阅超过30天即可领取，一年最多11次，当月有效、月底清零。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['算力用完', '算力不足'],
+                replies: {
+                    standard: '您好！算力用完后请在APP「会员订阅」页面充值算力即可继续使用，非常方便。',
+                    friendly: '算力用完了去APP充值就行啦，很方便～',
+                    concise: '算力用完后在APP充值即可继续使用。',
+                    professional: '算力补充：算力用完后在APP「会员订阅」页面充值即可继续使用。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['激活算力用完', '充值继续使用'],
+                replies: {
+                    standard: '您好！激活版本有效期内套餐附赠算力用完后，充值算力即可继续使用；会员到期后无法充值算力，需先续订对应版本后方可充值并继续使用。',
+                    friendly: '会员有效期内套餐算力用完了，充值算力就能继续用～会员到期了要先续订才能充值哦～',
+                    concise: '会员期内套餐算力用完可充值继续；会员到期需先续订再充值。',
+                    professional: '续用规则：会员有效期内套餐算力用完后可充值继续；会员到期需先续订方可充值使用。'
+                },
+                source: '流程指引库'
+            },
+            {
+                keywords: ['怎么使用', '使用方法', '入门教程'],
+                replies: {
+                    standard: '您好！下载安装后，只需四步即可开始使用：1.注册账号并完成实名认证；2.订阅购买会员版本；3.进入实时场景分析·AiGTO；4.选择对应平台即可使用。购买会员后，可联系专属客服获取使用教程与指导！',
+                    friendly: '使用很简单哦～注册认证→买会员→进AiGTO→选平台～买了会员找客服要教程～',
+                    concise: '四步使用：注册认证→订阅会员→进入AiGTO→选择平台。买会员后联系客服获取教程。',
+                    professional: '使用流程：注册并完成实名认证→订阅会员版本→进入AiGTO实时分析→选择对应平台。购买后联系客服获取教程。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['实时GTO建议', 'GTO建议'],
+                replies: {
+                    standard: '您好！AI功能根据当前场景，按GTO最优策略给出各决策选项的概率参考、场景强度、EV权益及策略尺度建议，供学习研究参考。',
+                    friendly: 'AI会根据当前场景给出GTO建议哦～包括概率、强度、EV权益和策略尺度～都是学习参考～',
+                    concise: 'AI按GTO策略给出概率、强度、EV权益及策略尺度建议，供学习参考。',
+                    professional: 'GTO建议：AI根据当前场景按GTO最优策略给出决策概率、场景强度、EV权益及策略尺度建议，供学习参考。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['对手行为', '调整策略', '对手风格'],
+                replies: {
+                    standard: '您好！L4版本支持设置翻前/翻后对抗参数，可根据对手风格进行针对性策略调整；L1-L3版本使用标准GTO均衡策略。',
+                    friendly: 'L4可以根据对手风格调整策略哦～L1-L3用的是标准GTO策略～',
+                    concise: 'L4支持对抗参数调整（针对对手风格）；L1-L3使用标准GTO策略。',
+                    professional: '策略调整：L4版本支持翻前/翻后对抗参数设置，可针对对手风格调整；L1-L3使用标准GTO均衡策略。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['收集对手信息', '对手数据', '隐私'],
+                replies: {
+                    standard: '您好！请您放心，ALPHAX基于GTO博弈论模型进行策略分析计算，AI通过对局场景数据优化策略模型，不额外收集或存储任何第三方个人信息。',
+                    friendly: '放心～我们不收集对手信息哦～AI只根据对局场景数据分析，不存第三方个人信息～',
+                    concise: '不收集或存储第三方个人信息，仅基于对局场景数据分析。',
+                    professional: '数据收集：ALPHAX基于GTO模型进行策略分析，AI通过对局场景数据优化模型，不收集或存储第三方个人信息。'
+                },
+                source: '风险红线库'
+            },
+            {
+                keywords: ['调得更凶', 'GTO参数设置', '打法激进'],
+                replies: {
+                    standard: '您好！可将翻后对抗参数适当调高，打法会更激进。具体参数设置建议在熟悉基础功能后，根据对手风格自行微调。订阅购买后联系客服可获得参数设置专业指导。',
+                    friendly: '想打得更凶就把翻后对抗参数调高～熟悉基础功能后根据对手风格微调～买了会员找客服指导～',
+                    concise: '调高翻后对抗参数可使打法更激进。建议熟悉基础后微调，可联系客服指导。',
+                    professional: '策略调整：调高翻后对抗参数可使打法更激进。建议熟悉基础功能后根据对手风格微调，可联系客服获取专业指导。'
+                },
+                source: '标准问答库'
+            },
+            {
+                keywords: ['更新中', '软件更新', '维护'],
+                replies: {
+                    standard: '您好！软件提示"更新中"表示当前版本正在升级维护，请耐心等待更新完成后再使用（预计需3-6小时或6-12小时不等）。维护期间给您造成不便，敬请谅解！',
+                    friendly: '软件正在更新维护哦～等3-12小时就好啦～感谢耐心等待～',
+                    concise: '正在升级维护，预计3-12小时，完成后即可使用。',
+                    professional: '更新维护：软件提示"更新中"表示正在升级维护，预计3-6小时或6-12小时，完成后即可使用。'
+                },
+                source: '疑难沉淀库'
+            },
+            {
+                keywords: ['计算不准确', '数据异常', '结果异常'],
+                replies: {
+                    standard: '您好！建议检查牌局数据同步及参数设置，重启APP刷新数据，如仍异常请联系客服提供UID、截图及问题场景，技术团队会协助排查。',
+                    friendly: '数据异常的话先检查同步和设置，重启APP试试～还不行就把UID、截图发给客服，技术大大帮您排查～',
+                    concise: '检查数据同步及设置，重启APP。仍异常请提供UID、截图联系客服。',
+                    professional: '异常排查：检查牌局数据同步及参数设置，重启APP刷新数据。仍异常请提供UID、截图及问题场景联系客服。'
+                },
+                source: '疑难沉淀库'
+            },
+            {
+                keywords: ['虚假信息', '注册信息', '真实有效'],
+                replies: {
+                    standard: '您好！根据国家相关互联网服务实名制要求，用户注册时需提供真实有效的手机号码，登录后需完成实名认证。真实信息用于账号安全验证和算力归属确认。如发现提供虚假信息，账号将被限制使用。',
+                    friendly: '注册信息一定要真实有效哦～国家要求实名制，虚假信息会导致账号被限制使用～',
+                    concise: '需提供真实有效信息，虚假信息将导致账号受限。',
+                    professional: '注册要求：根据国家实名制要求，需提供真实有效手机号并完成实名认证。虚假信息将导致账号限制使用。'
+                },
+                source: '风险红线库'
+            }
+        ];
+
+        function generateMockReply(question) {
+            const lowerQ = question.toLowerCase();
+            
+            for (const item of knowledgeBase) {
+                for (const keyword of item.keywords) {
+                    if (lowerQ.includes(keyword.toLowerCase())) {
+                        const reply = item.replies[currentTone] || item.replies.standard;
+                        return {
+                            text: reply,
+                            source: item.source
+                        };
+                    }
+                }
+            }
+
+            const defaultReplies = {
+                standard: '您好！感谢您的咨询。关于您提到的问题，为了能更准确地帮您解答，建议您提供更多具体信息，我会根据知识库为您提供专业建议。如有需要，也可以直接联系官方客服获取一对一指导。',
+                friendly: '您好呀！关于您的问题，为了能更准确地帮您解答，建议您提供更多具体信息～我会尽力帮您解答，也可以直接联系官方客服获取一对一指导哦！',
+                concise: '请提供更多具体信息以便准确解答，或联系官方客服获取指导。',
+                professional: '感谢您的咨询。为提供准确解答，建议补充具体信息。如需进一步协助，可联系官方客服获取一对一指导。'
+            };
+            
+            return {
+                text: defaultReplies[currentTone] || defaultReplies.standard,
+                source: '疑难沉淀库'
+            };
+        }
+
+        // 复制回复
+        async function copyReply() {
+            if (!currentReply) {
+                showToast('暂无可复制的回复内容');
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(currentReply);
+                const copyBtn = document.getElementById('copyBtn');
+                copyBtn.textContent = '✅ 已复制！';
+                copyBtn.classList.add('copied');
+
+                setTimeout(() => {
+                    copyBtn.textContent = '📋 一键复制回复';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                const textArea = document.createElement('textarea');
+                textArea.value = currentReply;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('已复制到剪贴板！');
+            }
+        }
+
+        // 历史记录
+        function addToHistory(question) {
+            if (chatHistory.some(item => item.question === question)) return;
+
+            chatHistory.unshift({ question, time: new Date().toLocaleTimeString() });
+            if (chatHistory.length > 10) chatHistory.pop();
+
+            renderHistory();
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function renderHistory() {
+            const section = document.getElementById('historySection');
+            const list = document.getElementById('historyList');
+
+            if (chatHistory.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            list.innerHTML = chatHistory.map((item, index) => `
+                <div class="history-item" onclick="loadHistory(${index})">
+                    <span class="history-question">${escapeHtml(item.question)}</span>
+                    <span class="history-time">${escapeHtml(item.time)}</span>
+                </div>
+            `).join('');
+        }
+
+        function loadHistory(index) {
+            document.getElementById('userQuestion').value = chatHistory[index].question;
+            document.getElementById('userQuestion').focus();
+        }
+
+        function fillExample(type) {
+            const examples = {
+                '风险红线库': '你们卖的东西是假货吧？我要投诉你们！',
+                '标准问答库': '包装破了怎么办？',
+                '流程指引库': '我想退货，怎么操作？',
+                '活动规则库': '有什么优惠活动吗？',
+                '疑难沉淀库': '这个产品和其他品牌比有什么优势？',
+                '升级条件': '你们这是什么态度？我要找你们领导！'
+            };
+
+            document.getElementById('userQuestion').value = examples[type] || '';
+            document.getElementById('userQuestion').focus();
+        }
+
+    </script>
+</body>
+</html>
